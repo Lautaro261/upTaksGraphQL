@@ -1,50 +1,14 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer } = require("apollo-server");
 
-const typeDefs = gql`
-    type Curso {
-        titulo: String
-    }
+const typeDefs = require("./db/schema");
+const resolvers = require("./db/resolvers");
+const conectarDB = require("./config/db");
 
-    type Tecnologia{
-        tecnologia: String
-    }
-
-    type Query {
-        obtenerCursos: [Curso]
-
-        obtenerTecnologias: [Tecnologia]
-    }
-`;
-
-const cursos = [
-    {
-        titulo: "Javascript Moderno Guía Definitiva",
-        tecnologia: "JavaScript ES6"
-    },
-    {
-        titulo: "React - La Guía Completa",
-        tecnologia: "React"
-    },
-    {
-        titulo: "Node.js - Bootcamp ",
-        tecnologia: "Node.js"
-    },
-    {
-        titulo: "ReactJS Avanzado",
-        tecnologia: "React"
-    },
-]
-
-const resolvers = {
-    Query: {
-        obtenerCursos: () => cursos,
-
-        obtenerTecnologias: () => cursos
-    }
-}
+//conectar a la DB 
+conectarDB()
 
 const server = new ApolloServer({ typeDefs, resolvers });
 
 server.listen().then(({ url }) => {
-    console.log(`Server en el puerto ${url}`)
+  console.log(`Server en el puerto ${url}`);
 });
