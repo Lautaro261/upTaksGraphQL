@@ -28,6 +28,18 @@ const resolvers = {
       } catch (error) {
         console.log(error)
       }
+    },
+
+    autenticarUsuario: async (root, {input}) =>{
+      const { email, password } = input;
+      const getUsriario = await Usuario.findOne({email});
+      console.log(getUsriario)
+      if(!getUsriario){
+        throw new Error("El usuario no existe")
+      }
+
+      const passwordCorrecto = await bcryptjs.compare(password, getUsriario.password);
+
     }
   }
 };
