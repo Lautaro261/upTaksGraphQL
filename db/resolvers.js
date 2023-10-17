@@ -32,14 +32,22 @@ const resolvers = {
 
     autenticarUsuario: async (root, {input}) =>{
       const { email, password } = input;
+      //1) Exite el usuario?
+      
       const getUsriario = await Usuario.findOne({email});
       console.log(getUsriario)
       if(!getUsriario){
         throw new Error("El usuario no existe")
       }
+      //2) El password es correcto ?
 
       const passwordCorrecto = await bcryptjs.compare(password, getUsriario.password);
 
+      if(!passwordCorrecto){
+        
+      }
+
+      //3) Dar acceso a la app
     }
   }
 };
