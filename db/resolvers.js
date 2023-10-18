@@ -1,5 +1,15 @@
 const Usuario = require("../models/Usuario");
-const bcryptjs = require("bcryptjs")
+const bcryptjs = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+require("dotenv").config({path: ".env"});
+
+
+const crearToken =(usuario, secreto, expiresIn)=>{
+  const {id, email} = usuario;
+
+  return jwt.sign({id, email}, secreto,{expiresIn});
+}
+
 const resolvers = {
   Query: {
     
@@ -7,9 +17,9 @@ const resolvers = {
   Mutation:{
     crearUsuario: async (root, {input}, ctx ) => {
       const { email, password } = input
-
+      //console.log(email, password)
       const getUsriario = await Usuario.findOne({email});
-      console.log(getUsriario)
+      //console.log(getUsriario)
       if(getUsriario){
         throw new Error("El usuario ya esta registrado")
       }
@@ -18,10 +28,10 @@ const resolvers = {
         const salt = await bcryptjs.genSalt(10);
         input.password = await bcryptjs.hash(password, salt);
 
-        console.log(input);
+        //console.log(input);
 
         const nuevoUsuario = await Usuario(input)
-        console.log(nuevoUsuario)
+        //console.log(nuevoUsuario)
         nuevoUsuario.save();
         return "Usuario creado correctamente"
 
@@ -35,7 +45,7 @@ const resolvers = {
       //1) Exite el usuario?
       
       const getUsriario = await Usuario.findOne({email});
-      console.log(getUsriario)
+      //console.log(getUsriario)
       if(!getUsriario){
         throw new Error("El usuario no existe")
       }
@@ -44,10 +54,13 @@ const resolvers = {
       const passwordCorrecto = await bcryptjs.compare(password, getUsriario.password);
 
       if(!passwordCorrecto){
-        
+        throw new Error("Password incorrecto")
       }
 
       //3) Dar acceso a la app
+      return { 
+        token: crearToken(getUsriario,process.env.SECRETO,"2hr" )
+      }
     }
   }
 };
