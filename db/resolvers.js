@@ -1,5 +1,6 @@
 const Usuario = require("../models/Usuario");
 const Proyecto = require("../models/Proyectos");
+const Tarea =require("../models/Tareas");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config({path: ".env"});
@@ -16,7 +17,15 @@ const resolvers = {
     obtenerProyectos: async(root, {}, ctx)=>{
       const proyectos = await Proyecto.find({creador: ctx.usuario.id})
       return proyectos
-    }
+    },
+    obtenerTareas: async(root, {input}, ctx)=>{
+      try {
+        const tareas = await Tarea.find({creador: ctx.usuario.id}).where("proyecto").equals(input.proyecto);
+        return tareas;
+      } catch (error) {
+        console.log(error)
+      }
+    },
   },
   Mutation:{
     crearUsuario: async (root, {input}, ctx ) => {
@@ -120,7 +129,59 @@ const resolvers = {
         console.log(error)
       }
 
-    }
+    },
+
+    nuevaTarea: async (root, {input}, ctx)=>{
+
+      try {
+        const tarea = new Tarea(input)
+        tarea.creador = ctx.usuario.id
+        const resultado = await Tarea.save()
+        return resultado
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    actualizarTarea: async(root, {id, input, estado}, ctx)=>{
+      try {
+        // tarea existe ? 
+        let tarea = await Tarea.findById(id)
+        if (!tarea){
+          throw new Error('Tarea no encontrado');
+        }
+        // el usuario es el propietario? 
+        if(tarea.creador.toString()!== ctx.usuario.id){
+          throw new Error('No tienes las credenciales para editarlo');
+        }
+        //modificar tarea
+        tarea = await Tarea.findOneAndUpdate({_id:id}, input, {new: true})
+        return tarea 
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    eliminarTarea: async(root,{id}, ctx)=>{
+      try {
+        // el proyecto existe ?
+        let tarea = await Tarea.findById(id)
+        if (!tarea){
+          throw new Error('Tarea no encontrado');
+        }
+        //el usuario que solicita modificar, es el creador ?
+        if(tarea.creador.toString()!== ctx.usuario.id){
+          throw new Error('No tienes las credenciales para editarlo');
+        }
+        //eliminar el proyecto
+        await Tarea.findOneAndDelete({_id:id})
+        return "Tarea eliminado"
+
+      } catch (error) {
+        console.log(error)
+      }
+
+    },
+    
 
 
   }

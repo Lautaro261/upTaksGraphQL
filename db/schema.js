@@ -2,13 +2,21 @@ const { gql } = require("apollo-server");
 
 const typeDefs = gql`
 
+  type Query {
+    obtenerProyectos:[Proyecto]
+    obtenerTareas(input: ProyectoIDInput):[Tarea]
+  }
+
   type Proyecto{
     nombre: String
     id: ID
   }
 
-  type Query {
-    obtenerProyectos:[Proyecto]
+  type Tarea{
+    nombre: String
+    id: ID 
+    proyecto: String
+    estado: Boolean
   }
 
   type Token {
@@ -31,12 +39,29 @@ const typeDefs = gql`
 
   }
 
+  input TareaInput{
+    nombre: String!
+    proyecto: String!
+
+  }
+
+  input ProyectoIDInput{
+    proyecto: String!
+
+  }
+
   type Mutation {
+    #Usuario
     crearUsuario(input: UsuarioInput): String  
     autenticarUsuario(input: AutenticarInput): Token
+    #Proyecto
     nuevoProyecto(input:ProyectoInput): Proyecto
     actualizarProyecto(id: ID!, input:ProyectoInput):Proyecto
     eliminarProyecto(id: ID!): String
+    #Tarea
+    nuevaTarea(input:TareaInput): Tarea
+    actualizarTarea(id: ID!, input:TareaInput, estado: Boolean): Tarea 
+    eliminarTarea(id: ID!): String
   }
 `;
 
