@@ -1,4 +1,5 @@
 const Usuario = require("../models/Usuario");
+const Proyecto = require("../models/Proyectos");
 const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config({path: ".env"});
@@ -12,7 +13,10 @@ const crearToken =(usuario, secreto, expiresIn)=>{
 
 const resolvers = {
   Query: {
-    
+    obtenerProyectos: async(root, {}, ctx)=>{
+      const proyectos = await Proyecto.find({creador: ctx.usuario.id})
+      return proyectos
+    }
   },
   Mutation:{
     crearUsuario: async (root, {input}, ctx ) => {
@@ -61,7 +65,64 @@ const resolvers = {
       return { 
         token: crearToken(getUsriario,process.env.SECRETO,"2hr" )
       }
+    },
+    nuevoProyecto: async(root,{input}, ctx)=>{
+       console.log('Linea 67',ctx)
+      try {
+        console.log(input)
+        const proyecto = new Proyecto(input)
+
+        proyecto.creador = ctx.usuario.id
+
+        const resultado = await proyecto.save()
+        return resultado;
+
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    actualizarProyecto: async(root,{id, input}, ctx)=>{
+      try {
+        // el proyecto existe ?
+        let proyecto = await Proyecto.findById(id)
+        if (!proyecto){
+          throw new Error('Proyecto no encontrado');
+        }
+        //el usuario que solicita modificar, es el creador ?
+        if(proyecto.creador.toString()!== ctx.usuario.id){
+          throw new Error('No tienes las credenciales para editarlo');
+        }
+
+        //guardar el proyecto
+        proyecto = await Proyecto.findByIdAndUpdate({_id:id}, input, {new: true})
+        return proyecto;
+      } catch (error) {
+        console.log(error)
+      }
+    },
+
+    eliminarProyecto: async(root,{id}, ctx)=>{
+      try {
+        // el proyecto existe ?
+        let proyecto = await Proyecto.findById(id)
+        if (!proyecto){
+          throw new Error('Proyecto no encontrado');
+        }
+        //el usuario que solicita modificar, es el creador ?
+        if(proyecto.creador.toString()!== ctx.usuario.id){
+          throw new Error('No tienes las credenciales para editarlo');
+        }
+        //eliminar el proyecto
+        await Proyecto.findOneAndDelete({_id:id})
+        return "Proyecto eliminado"
+
+      } catch (error) {
+        console.log(error)
+      }
+
     }
+
+
   }
 };
 
