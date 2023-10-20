@@ -30,7 +30,7 @@ const resolvers = {
     saludo: async(root,{}, ctx)=>{
       try {
         
-        return "Hola!"
+        return "si se pudo conectar"
 
       } catch (error) {
         console.log(error)
