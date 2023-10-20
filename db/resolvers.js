@@ -7,9 +7,9 @@ require("dotenv").config({path: ".env"});
 
 
 const crearToken =(usuario, secreto, expiresIn)=>{
-  const {id, email} = usuario;
+  const {id, email, nombre} = usuario;
 
-  return jwt.sign({id, email}, secreto,{expiresIn});
+  return jwt.sign({id, email, nombre}, secreto,{expiresIn});
 }
 
 const resolvers = {
@@ -84,7 +84,7 @@ const resolvers = {
 
       //3) Dar acceso a la app
       return { 
-        token: crearToken(getUsriario,process.env.SECRETO,"2hr" )
+        token: crearToken(getUsriario ,process.env.SECRETO,"4hr" )
       }
     },
     nuevoProyecto: async(root,{input}, ctx)=>{

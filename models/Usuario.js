@@ -10,7 +10,8 @@ const UsuariosSchema = mongoose.Schema({
         type: String,
         require: true,
         trin: true,
-        unique: true
+        unique: true,
+        lowerCase: true
     },
     password:{
         type: String,
