@@ -26,6 +26,18 @@ const resolvers = {
         console.log(error)
       }
     },
+
+    saludo: async(root,{}, ctx)=>{
+      try {
+        
+        return "Hola!"
+
+      } catch (error) {
+        console.log(error)
+      }
+
+    }
+    
   },
   Mutation:{
     crearUsuario: async (root, {input}, ctx ) => {
@@ -181,7 +193,7 @@ const resolvers = {
       }
 
     },
-    
+  
 
 
   }

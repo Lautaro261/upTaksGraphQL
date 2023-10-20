@@ -5,6 +5,7 @@ const typeDefs = gql`
   type Query {
     obtenerProyectos:[Proyecto]
     obtenerTareas(input: ProyectoIDInput):[Tarea]
+    saludo: String
   }
 
   type Proyecto{
