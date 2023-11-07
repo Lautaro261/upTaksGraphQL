@@ -15,8 +15,23 @@ const crearToken =(usuario, secreto, expiresIn)=>{
 const resolvers = {
   Query: {
     obtenerProyectos: async(root, {}, ctx)=>{
-      const proyectos = await Proyecto.find({creador: ctx.usuario.id})
-      return proyectos
+      try {
+       // console.log(ctx.usuario)
+        const proyectos = await Proyecto.find({creador: ctx.usuario.id})
+        const proyectosConFechaFormateada = proyectos.map((proyecto) => ({
+          id: proyecto.id,
+          nombre: proyecto.nombre,
+          creado: proyecto.creado.toLocaleDateString('es-ES', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+          }),
+        }));
+        return proyectosConFechaFormateada;
+      } catch (error) {
+        console.log(error)
+      }
+      
     },
     obtenerTareas: async(root, {input}, ctx)=>{
       try {

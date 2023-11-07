@@ -11,6 +11,7 @@ const typeDefs = gql`
   type Proyecto{
     nombre: String
     id: ID
+    creado: String
   }
 
   type Tarea{
