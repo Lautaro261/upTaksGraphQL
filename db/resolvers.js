@@ -161,9 +161,10 @@ const resolvers = {
     nuevaTarea: async (root, {input}, ctx)=>{
 
       try {
+        console.log(input)
         const tarea = new Tarea(input)
         tarea.creador = ctx.usuario.id
-        const resultado = await Tarea.save()
+        const resultado = await tarea.save()
         return resultado
       } catch (error) {
         console.log(error)
